@@ -27,7 +27,3 @@ for i in items:
     print "%s:%s\nqt:%s cat:%s:%s\n%s\n" % (i.id, i.name, i.quantity,
                                             i.category_id, i.category.name,
                                             i.description)
-# item2 = Item(name="Apple", description="Red and juicy", quantity=35,
-#              category_id=1)
-# session.add(item2)
-# session.commit()

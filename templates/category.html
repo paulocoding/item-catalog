@@ -3,33 +3,24 @@
 {% block main %}
   <div class="row">
     <div class="categories">
-      <h2>Categories</h2>
-      <ul>
-        <li>
-          <a href="#">Fruit</a>
-        </li>
-        <li>
-          <a href="#">Vegetables</a>
-        </li>
-        <li>
-          <a href="#">Cookies</a>
-        </li>
-      </ul>
+      <h2>{{category.name}}
+        <a href="{{url_for('editCategory', category_name=category.name)}}"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+        <a href="{{url_for('deleteCategory', category_name=category.name)}}"><i class="fa fa-trash" aria-hidden="true"></i></a>
+      </h2>
+      <p>{{category.description}}
+
+      </p>
     </div>
     <div class="items">
-      <h2>
-        {{category_name}}
-        <a href="#"><i class="fa fa-trash" aria-hidden="true"></i></a>
-        <a href="#"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-      </h2>
+      <h2>Items</h2>
       <h3>
-        <a href="#"><i class="fa fa-plus" aria-hidden="true"></i> New Item</a>
+        <a href="{{url_for('newItem', category_name=category.name)}}"><i class="fa fa-plus" aria-hidden="true"></i> New Item</a>
       </h3>
-      <h4>3 items</h4>
+      <h4>{{ items|length }} items</h4>
       <ul>
-        <li><a href="#">Apple</a></li>
-        <li><a href="#">Banana</a></li>
-        <li><a href="#">Orange</a></li>
+        {% for item in items %}
+          <li><a href="{{url_for('showItem', category_name=item.category.name, item_name=item.name)}}">{{item.name}}</a></li>
+        {% endfor %}
       </ul>
     </div>
   </div>

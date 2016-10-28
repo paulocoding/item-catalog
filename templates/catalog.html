@@ -2,29 +2,26 @@
 
 {% block main %}
   <div class="row">
+
     <div class="categories">
       <h2>Categories</h2>
       <h3>
-        <a href="#"><i class="fa fa-plus" aria-hidden="true"></i> new</a>
+        <a href="{{url_for('newCategory')}}"><i class="fa fa-plus" aria-hidden="true"></i> new</a>
       </h3>
       <ul>
-        <li>
-          <a href="#">Fruit</a>
-        </li>
-        <li>
-          <a href="#">Vegetables</a>
-        </li>
-        <li>
-          <a href="#">Cookies</a>
-        </li>
+        {% for cat in categories %}
+          <li>
+            <a href="{{url_for('showCategory', category_name=cat.name)}}">{{cat.name}}</a>
+          </li>
+        {% endfor %}
       </ul>
     </div>
     <div class="items">
       <h2>All Items</h2>
       <ul>
-        <li><a href="#">Apple | Fruit</a></li>
-        <li><a href="#">Banana | Fruit</a></li>
-        <li><a href="#">Orange | Fruit</a></li>
+        {% for item in items %}
+          <li><a href="{{url_for('showItem', category_name=item.category.name, item_name=item.name)}}">{{item.name}} | {{item.category.name}}</a></li>
+        {% endfor %}
       </ul>
     </div>
   </div>

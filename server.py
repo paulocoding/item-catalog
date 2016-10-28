@@ -1,13 +1,27 @@
 from flask import Flask, render_template, url_for, request, redirect, flash, jsonify
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from database_setup import Base, Category, Item
+
+
+# db setup
+engine = create_engine('sqlite:///catalog.db')
+Base.metadata.bind = engine
+
+DBSession = sessionmaker(bind=engine)
+session = DBSession()
+
+# app
 
 app = Flask(__name__)
-
 
 # Routes
 @app.route('/')
 @app.route('/catalog')
 def showCatalog():
-    return render_template('catalog.html')
+    categories = session.query(Category).order_by(Category.name).all()
+    items = session.query(Item).order_by(Item.name).all()
+    return render_template('catalog.html', categories=categories, items=items)
 
 
 # categories CRUD
@@ -19,7 +33,11 @@ def newCategory():
 
 @app.route('/catalog/<string:category_name>')
 def showCategory(category_name):
-    return render_template('category.html', category_name=category_name)
+    selected_category = session.query(Category).filter_by(name=category_name).first()
+    if selected_category:
+        items = session.query(Item).filter_by(category_id=selected_category.id).order_by(Item.name).all()
+        return render_template('category.html', category=selected_category, items=items)
+    return render_template('404.html')
 
 
 @app.route('/catalog/<string:category_name>/edit')
@@ -40,8 +58,11 @@ def newItem(category_name):
 
 @app.route('/catalog/<string:category_name>/<string:item_name>')
 def showItem(category_name, item_name):
-    return render_template('item.html', category_name=category_name,
-                           item_name=item_name)
+    selected_category = session.query(Category).filter_by(name=category_name).first()
+    selected_item = session.query(Item).filter_by(name=item_name).order_by(Item.name).first()
+    if selected_category and selected_item:
+        return render_template('item.html', category=selected_category, item=selected_item)
+    return render_template('404.html')
 
 
 @app.route('/catalog/<string:category_name>/<string:item_name>/edit')

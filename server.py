@@ -19,7 +19,7 @@ def newCategory():
 
 @app.route('/catalog/<string:category_name>')
 def showCategory(category_name):
-    return "%s - Category page." % category_name
+    return render_template('category.html', category_name=category_name)
 
 
 @app.route('/catalog/<string:category_name>/edit')
@@ -40,7 +40,8 @@ def newItem(category_name):
 
 @app.route('/catalog/<string:category_name>/<string:item_name>')
 def showItem(category_name, item_name):
-    return "%s>%s - Item page." % (category_name, item_name)
+    return render_template('item.html', category_name=category_name,
+                           item_name=item_name)
 
 
 @app.route('/catalog/<string:category_name>/<string:item_name>/edit')

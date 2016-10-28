@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block main %}
+  <div class="row">
+    <div class="categories">
+      <h2>Categories</h2>
+      <ul>
+        <li>
+          <a href="#">Fruit</a>
+        </li>
+        <li>
+          <a href="#">Vegetables</a>
+        </li>
+        <li>
+          <a href="#">Cookies</a>
+        </li>
+      </ul>
+    </div>
+    <div class="items">
+      <h2>
+        {{category_name}}
+        <a href="#"><i class="fa fa-trash" aria-hidden="true"></i></a>
+        <a href="#"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+      </h2>
+      <h3>
+        <a href="#"><i class="fa fa-plus" aria-hidden="true"></i> New Item</a>
+      </h3>
+      <h4>3 items</h4>
+      <ul>
+        <li><a href="#">Apple</a></li>
+        <li><a href="#">Banana</a></li>
+        <li><a href="#">Orange</a></li>
+      </ul>
+    </div>
+  </div>
+{% endblock %}

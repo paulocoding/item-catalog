@@ -1,3 +1,4 @@
+"""Cleans up the Database and fills it with some default data."""
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 

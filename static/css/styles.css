@@ -105,3 +105,38 @@ a:hover {
   display: table;
   clear: both;
 }
+label{
+	display: block;
+	padding: 10px 0 5px 10px;
+	font-weight: 600;
+	font-size: 1.2em;
+	width: 100%;
+}
+input, select {
+  display: block;
+	margin-left: 5%;
+	margin-right: 15%;
+	padding: 4px 8px;
+}
+input[type="text"] {
+	width: 80%;
+}
+input[type="number"] {
+	width: 70px;
+}
+textarea {
+	display: block;
+	width: 80%;
+	margin-left: 5%;
+	margin-right: 15%;
+	padding: 4px 8px;
+	height: 150px;
+  resize: none;
+}
+
+input[type="submit"] {
+  display: block;
+	padding: 4px 8px;
+	margin-top: 10px;
+	margin-left: 5%;
+}

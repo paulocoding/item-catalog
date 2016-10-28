@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block main %}
+  <div class="row">
+    <h3>{{category.name}}</h3>
+    <p>{{category.description}}</p>
+    <br>
+    <hr>
+    <h2>Delete this Category?</h2>
+    <form method="post">
+      <input type="submit" name="submit" value="Confirm Delete">
+    </form>
+  </div>
+{% endblock %}

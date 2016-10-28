@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block main %}
+  <div class="row">
+    <h2>
+      {{item.name}}
+    </h2>
+    <h3>{{category.name}}</h3>
+    <p>
+      {{ item.description }}
+    </p>
+    <p><b>quantity:</b> {{ item.quantity }}</p>
+  </div>
+  <br>
+  <hr>
+  <h2>Delete this Item?</h2>
+  <form method="post">
+    <input type="submit" name="submit" value="Confirm Delete">
+  </form>
+{% endblock %}

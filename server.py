@@ -7,13 +7,14 @@ app = Flask(__name__)
 @app.route('/')
 @app.route('/catalog')
 def showCatalog():
-    return "Catalog page."
+    return render_template('catalog.html')
 
 
 # categories CRUD
+@app.route('/category/new')
 @app.route('/catalog/category/new')
 def newCategory():
-    return "New category page."
+    return "new category page"
 
 
 @app.route('/catalog/<string:category_name>')

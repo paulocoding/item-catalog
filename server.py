@@ -14,6 +14,7 @@ session = DBSession()
 # app
 
 app = Flask(__name__)
+app.secret_key = 'secretive_k3y'
 
 # Routes
 @app.route('/')
@@ -35,6 +36,7 @@ def newCategory():
         new_category = Category(name=name, description=description)
         session.add(new_category)
         session.commit()
+        flash('New Category created: %s' % name)
         return redirect(url_for('showCatalog'))
 
 
@@ -60,6 +62,7 @@ def editCategory(category_name):
             selected_category.description = description
             session.add(selected_category)
             session.commit()
+            flash('%s Category edited!' % name)
             return redirect(url_for('showCategory', category_name=name))
     return render_template('404.html')
 
@@ -73,6 +76,7 @@ def deleteCategory(category_name):
         if request.method == 'POST':
             session.delete(selected_category)
             session.commit()
+            flash('%s Category deleted!' % selected_category.name)
             return redirect(url_for('showCatalog'))
     return render_template('404.html')
 
@@ -94,6 +98,7 @@ def newItem():
                         category_id=category_id)
         session.add(new_item)
         session.commit()
+        flash('New Item created: %s' % name)
         return redirect(url_for('showItem', category_name=new_item.category.name, item_name=name))
 
 
@@ -123,6 +128,7 @@ def editItem(category_name, item_name):
             selected_item.category_id = category_id
             selected_item.quantity = quantity
             session.add(selected_item)
+            flash('%s Item edited!' % name)
             session.commit()
             return redirect(url_for('showItem', category_name=selected_item.category.name, item_name=name))
     return render_template('404.html')
@@ -138,6 +144,7 @@ def deleteItem(category_name, item_name):
         if request.method == 'POST':
             session.delete(selected_item)
             session.commit()
+            flash('%s Item deleted!' % item_name)
             return redirect(url_for('showCatalog'))
     return render_template('404.html')
 

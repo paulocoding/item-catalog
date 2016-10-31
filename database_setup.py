@@ -23,7 +23,7 @@ class Item(Base):
     name = Column(String(100), nullable=False)
     description = Column(String(500))
     quantity = Column(Integer)
-    category_id = Column(Integer, ForeignKey('category.id'))
+    category_id = Column(Integer, ForeignKey('category.id'), nullable=False)
     category = relationship(Category)
 
 

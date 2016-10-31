@@ -11,12 +11,12 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-# app
-
+# app setup
 app = Flask(__name__)
 app.secret_key = 'secretive_k3y'
 
 # Routes
+# Show Home page
 @app.route('/')
 @app.route('/catalog')
 def showCatalog():
@@ -25,7 +25,8 @@ def showCatalog():
     return render_template('catalog.html', categories=categories, items=items)
 
 
-# categories CRUD
+# Categories CRUD
+# New Category
 @app.route('/catalog/category/new', methods=['GET', 'POST'])
 def newCategory():
     if request.method == 'GET':
@@ -39,7 +40,7 @@ def newCategory():
         flash('New Category created: %s' % name)
         return redirect(url_for('showCatalog'))
 
-
+# Show Category
 @app.route('/catalog/<string:category_name>')
 def showCategory(category_name):
     selected_category = session.query(Category).filter_by(name=category_name).first()
@@ -48,7 +49,7 @@ def showCategory(category_name):
         return render_template('category.html', category=selected_category, items=items)
     return render_template('404.html')
 
-
+# Edit Category
 @app.route('/catalog/<string:category_name>/edit', methods=['GET', 'POST'])
 def editCategory(category_name):
     selected_category = session.query(Category).filter_by(name=category_name).first()
@@ -66,7 +67,7 @@ def editCategory(category_name):
             return redirect(url_for('showCategory', category_name=name))
     return render_template('404.html')
 
-
+# Delete Category
 @app.route('/catalog/<string:category_name>/delete', methods=['GET', 'POST'])
 def deleteCategory(category_name):
     selected_category = session.query(Category).filter_by(name=category_name).first()
@@ -81,7 +82,8 @@ def deleteCategory(category_name):
     return render_template('404.html')
 
 
-# items CRUD
+# Items CRUD
+# New Item
 @app.route('/catalog/item/new', methods=['GET', 'POST'])
 def newItem():
     if request.method == 'GET':
@@ -101,7 +103,7 @@ def newItem():
         flash('New Item created: %s' % name)
         return redirect(url_for('showItem', category_name=new_item.category.name, item_name=name))
 
-
+# Show Item
 @app.route('/catalog/<string:category_name>/<string:item_name>')
 def showItem(category_name, item_name):
     selected_category = session.query(Category).filter_by(name=category_name).first()
@@ -110,7 +112,7 @@ def showItem(category_name, item_name):
         return render_template('item.html', category=selected_category, item=selected_item)
     return render_template('404.html')
 
-
+# Edit Item
 @app.route('/catalog/<string:category_name>/<string:item_name>/edit', methods=['GET', 'POST'])
 def editItem(category_name, item_name):
     categories = session.query(Category).order_by(Category.name).all()
@@ -133,7 +135,7 @@ def editItem(category_name, item_name):
             return redirect(url_for('showItem', category_name=selected_item.category.name, item_name=name))
     return render_template('404.html')
 
-
+# Delete Item
 @app.route('/catalog/<string:category_name>/<string:item_name>/delete', methods=['GET', 'POST'])
 def deleteItem(category_name, item_name):
     selected_category = session.query(Category).filter_by(name=category_name).first()
@@ -150,18 +152,20 @@ def deleteItem(category_name, item_name):
 
 
 # JSON endpoints
+
+# All items JSON
 @app.route('/catalog/JSON')
 def showItemsJSON():
     all_items = session.query(Item).all()
     return jsonify({'catalog': [item.serialize for item in all_items]})
 
-
+# Categories JSON
 @app.route('/catalog/category/JSON')
 def showCategoriesJSON():
     all_categories = session.query(Category).all()
     return jsonify({'Categories': [cat.serialize for cat in all_categories]})
 
-
+# Category JSON
 @app.route('/catalog/<string:category_name>/JSON')
 def showCategoryJSON(category_name):
     category = session.query(Category).filter_by(name=category_name).first()
@@ -169,7 +173,7 @@ def showCategoryJSON(category_name):
         items = session.query(Item).filter_by(category_id=category.id).all()
         return jsonify({category.name: [item.serialize for item in items]})
 
-
+# Item JSON
 @app.route('/catalog/<string:category_name>/<string:item_name>/JSON')
 def showItemJSON(category_name, item_name):
     category = session.query(Category).filter_by(name=category_name).first()

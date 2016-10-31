@@ -149,6 +149,35 @@ def deleteItem(category_name, item_name):
     return render_template('404.html')
 
 
+# JSON endpoints
+@app.route('/catalog/JSON')
+def showItemsJSON():
+    all_items = session.query(Item).all()
+    return jsonify({'catalog': [item.serialize for item in all_items]})
+
+
+@app.route('/catalog/category/JSON')
+def showCategoriesJSON():
+    all_categories = session.query(Category).all()
+    return jsonify({'Categories': [cat.serialize for cat in all_categories]})
+
+
+@app.route('/catalog/<string:category_name>/JSON')
+def showCategoryJSON(category_name):
+    category = session.query(Category).filter_by(name=category_name).first()
+    if category:
+        items = session.query(Item).filter_by(category_id=category.id).all()
+        return jsonify({category.name: [item.serialize for item in items]})
+
+
+@app.route('/catalog/<string:category_name>/<string:item_name>/JSON')
+def showItemJSON(category_name, item_name):
+    category = session.query(Category).filter_by(name=category_name).first()
+    item = session.query(Item).filter_by(name=item_name).first()
+    if category and item:
+        return jsonify({'Item': item.serialize})
+
+
 # Run app if run as script:
 if __name__ == '__main__':
     app.debug = True

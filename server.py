@@ -249,6 +249,9 @@ def editCategory(category_name):
         return redirect(url_for('showLogin'))
     selected_category = session.query(Category).filter_by(name=category_name).first()
     if selected_category:
+        # checking if current user is the author:
+        if current_user() != selected_category.user_id:
+            return redirect(url_for('showCategory', category_name=category_name))
         if request.method == 'GET':
             return render_template('edit_category.html', category=selected_category)
         if request.method == 'POST':
@@ -270,6 +273,9 @@ def deleteCategory(category_name):
         return redirect(url_for('showLogin'))
     selected_category = session.query(Category).filter_by(name=category_name).first()
     if selected_category:
+        # checking if current user is the author:
+        if current_user() != selected_category.user_id:
+            return redirect(url_for('showCategory', category_name=category_name))
         if request.method == 'GET':
             return render_template('delete_category.html', category=selected_category)
         if request.method == 'POST':
@@ -323,6 +329,9 @@ def editItem(category_name, item_name):
     categories = session.query(Category).order_by(Category.name).all()
     selected_item = session.query(Item).filter_by(name=item_name).first()
     if selected_item:
+        # checking if current user is the author:
+        if current_user() != selected_item.user_id:
+            return redirect(url_for('showItem', category_name=category_name, item_name=item_name))
         if request.method == 'GET':
             return render_template('edit_item.html', categories=categories, item=selected_item)
         if request.method == 'POST':
@@ -349,6 +358,9 @@ def deleteItem(category_name, item_name):
     selected_category = session.query(Category).filter_by(name=category_name).first()
     selected_item = session.query(Item).filter_by(name=item_name).first()
     if selected_category and selected_item:
+        # checking if current user is the author:
+        if current_user() != selected_item.user_id:
+            return redirect(url_for('showItem', category_name=category_name, item_name=item_name))
         if request.method == 'GET':
             return render_template('delete_item.html', category=selected_category, item=selected_item)
         if request.method == 'POST':

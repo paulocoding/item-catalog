@@ -1,7 +1,7 @@
 from flask import Flask, render_template, url_for, request, redirect, flash, jsonify
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Category, Item
+from database_setup import Base, Category, Item, User
 
 from flask import session as login_session
 import random
@@ -15,7 +15,7 @@ from flask import make_response
 import requests
 
 # db setup
-engine = create_engine('sqlite:///catalog.db')
+engine = create_engine('sqlite:///catalogwithusers.db')
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
@@ -29,6 +29,29 @@ app.secret_key = 'secretive_k3y'
 CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "ItemCatalog"
+
+
+# User Helper Functions
+def createUser(login_session):
+    newUser = User(name=login_session['username'], email=login_session[
+                   'email'], picture=login_session['picture'])
+    session.add(newUser)
+    session.commit()
+    user = session.query(User).filter_by(email=login_session['email']).one()
+    return user.id
+
+
+def getUserInfo(user_id):
+    user = session.query(User).filter_by(id=user_id).one()
+    return user
+
+
+def getUserID(email):
+    try:
+        user = session.query(User).filter_by(email=email).one()
+        return user.id
+    except:
+        return None
 
 
 def is_user_logged():
@@ -125,6 +148,11 @@ def gconnect():
     login_session['username'] = data['name']
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
+    user_id = getUserID(data['email'])
+    if not user_id:
+        # new user
+        user_id = createUser(login_session)
+    login_session['user_id'] = user_id
 
     output = ''
     output += '<h1>Welcome, '
@@ -192,7 +220,7 @@ def newCategory():
     if request.method == 'POST':
         name = request.form['name']
         description = request.form['description']
-        new_category = Category(name=name, description=description)
+        new_category = Category(name=name, description=description, user_id=login_session['user_id'])
         session.add(new_category)
         session.commit()
         flash('New Category created: %s' % name)
@@ -264,7 +292,8 @@ def newItem():
         new_item = Item(name=name,
                         description=description,
                         quantity=quantity,
-                        category_id=category_id)
+                        category_id=category_id,
+                        user_id=login_session['user_id'])
         session.add(new_item)
         session.commit()
         flash('New Item created: %s' % name)

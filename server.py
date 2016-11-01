@@ -55,7 +55,12 @@ def getUserID(email):
 
 
 def is_user_logged():
-    return 'username' not in login_session
+    return 'username' in login_session
+
+
+def current_user():
+    return login_session.get('user_id')
+
 
 # Routes
 # Show Home page
@@ -64,7 +69,7 @@ def is_user_logged():
 def showCatalog():
     categories = session.query(Category).order_by(Category.name).all()
     items = session.query(Item).order_by(Item.name).all()
-    return render_template('catalog.html', categories=categories, items=items)
+    return render_template('catalog.html', categories=categories, items=items, logged=is_user_logged())
 
 # Login
 @app.route('/login')
@@ -199,6 +204,7 @@ def gdisconnect():
         del login_session['username']
         del login_session['email']
         del login_session['picture']
+        del login_session['user_id']
         response = make_response(json.dumps('Successfully disconnected.'), 200)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -213,7 +219,7 @@ def gdisconnect():
 @app.route('/catalog/category/new', methods=['GET', 'POST'])
 def newCategory():
     # checking if user is logged in:
-    if is_user_logged():
+    if not is_user_logged():
         return redirect(url_for('showLogin'))
     if request.method == 'GET':
         return render_template('new_category.html')
@@ -232,14 +238,14 @@ def showCategory(category_name):
     selected_category = session.query(Category).filter_by(name=category_name).first()
     if selected_category:
         items = session.query(Item).filter_by(category_id=selected_category.id).order_by(Item.name).all()
-        return render_template('category.html', category=selected_category, items=items)
+        return render_template('category.html', category=selected_category, items=items, user_id=current_user(), logged=is_user_logged())
     return render_template('404.html')
 
 # Edit Category
 @app.route('/catalog/<string:category_name>/edit', methods=['GET', 'POST'])
 def editCategory(category_name):
     # checking if user is logged in:
-    if is_user_logged():
+    if not is_user_logged():
         return redirect(url_for('showLogin'))
     selected_category = session.query(Category).filter_by(name=category_name).first()
     if selected_category:
@@ -260,7 +266,7 @@ def editCategory(category_name):
 @app.route('/catalog/<string:category_name>/delete', methods=['GET', 'POST'])
 def deleteCategory(category_name):
     # checking if user is logged in:
-    if is_user_logged():
+    if not is_user_logged():
         return redirect(url_for('showLogin'))
     selected_category = session.query(Category).filter_by(name=category_name).first()
     if selected_category:
@@ -279,7 +285,7 @@ def deleteCategory(category_name):
 @app.route('/catalog/item/new', methods=['GET', 'POST'])
 def newItem():
     # checking if user is logged in:
-    if is_user_logged():
+    if not is_user_logged():
         return redirect(url_for('showLogin'))
     if request.method == 'GET':
         categories = session.query(Category).order_by(Category.name).all()
@@ -305,14 +311,14 @@ def showItem(category_name, item_name):
     selected_category = session.query(Category).filter_by(name=category_name).first()
     selected_item = session.query(Item).filter_by(name=item_name).first()
     if selected_category and selected_item:
-        return render_template('item.html', category=selected_category, item=selected_item)
+        return render_template('item.html', category=selected_category, item=selected_item, user_id=current_user())
     return render_template('404.html')
 
 # Edit Item
 @app.route('/catalog/<string:category_name>/<string:item_name>/edit', methods=['GET', 'POST'])
 def editItem(category_name, item_name):
     # checking if user is logged in:
-    if is_user_logged():
+    if not is_user_logged():
         return redirect(url_for('showLogin'))
     categories = session.query(Category).order_by(Category.name).all()
     selected_item = session.query(Item).filter_by(name=item_name).first()
@@ -338,7 +344,7 @@ def editItem(category_name, item_name):
 @app.route('/catalog/<string:category_name>/<string:item_name>/delete', methods=['GET', 'POST'])
 def deleteItem(category_name, item_name):
     # checking if user is logged in:
-    if is_user_logged():
+    if not is_user_logged():
         return redirect(url_for('showLogin'))
     selected_category = session.query(Category).filter_by(name=category_name).first()
     selected_item = session.query(Item).filter_by(name=item_name).first()

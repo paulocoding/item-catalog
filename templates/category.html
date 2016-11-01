@@ -4,8 +4,10 @@
   <div class="row">
     <div class="categories">
       <h2>{{category.name}}
-        <a href="{{url_for('editCategory', category_name=category.name)}}"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-        <a href="{{url_for('deleteCategory', category_name=category.name)}}"><i class="fa fa-trash" aria-hidden="true"></i></a>
+        {% if user_id == category.user_id %}
+          <a href="{{url_for('editCategory', category_name=category.name)}}"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+          <a href="{{url_for('deleteCategory', category_name=category.name)}}"><i class="fa fa-trash" aria-hidden="true"></i></a>
+        {% endif %}
       </h2>
       <p>{{category.description}}
 
@@ -13,9 +15,11 @@
     </div>
     <div class="items">
       <h2>Items</h2>
-      <h3>
-        <a href="{{url_for('newItem')}}"><i class="fa fa-plus" aria-hidden="true"></i> New Item</a>
-      </h3>
+      {% if logged %}
+        <h3>
+          <a href="{{url_for('newItem')}}"><i class="fa fa-plus" aria-hidden="true"></i> New Item</a>
+        </h3>
+      {% endif %}
       <h4>{{ items|length }} items</h4>
       <ul>
         {% for item in items %}

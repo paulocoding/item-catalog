@@ -15,7 +15,7 @@
     </div>
     <div class="items">
       <h2>Items</h2>
-      {% if logged %}
+      {% if user %}
         <h3>
           <a href="{{url_for('newItem')}}"><i class="fa fa-plus" aria-hidden="true"></i> New Item</a>
         </h3>

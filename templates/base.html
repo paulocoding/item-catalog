@@ -11,7 +11,16 @@
   </head>
   <body>
     <header>
-      <h1><a href="{{url_for('showCatalog')}}">Catalog</a></h1>
+      <div class="content row">
+        <h1><a href="{{url_for('showCatalog')}}">Catalog</a></h1>
+        {% if user %}
+          <a href="{{url_for('gdisconnect')}}" class="logout-btn">Logout</a>
+          <img class="profile-pic" src="{{user.picture}}" alt="profile picture">
+          <h3>{{user.name}}</h3>
+        {% else %}
+          <a href="{{url_for('showLogin')}}" class="login-btn">Login</a>
+        {% endif %}
+      </div>
     </header>
     <div class="flash">
       {% block flash %}

@@ -17,11 +17,60 @@ header {
   color: #fc6;
 }
 
+.content{
+  max-width: 800px;
+	margin: 0 auto;
+}
+
 header h1 {
   display: block;
-  max-width: 800px;
-  margin: 0 auto;
+	float: left;
+  max-width: 400px;
+  margin: 0 20px 0 50px;
 }
+header h3 {
+  display: block;
+	float: right;
+  max-width: 400px;
+  margin: 28px 10px 0 5px;
+}
+img.profile-pic {
+  display: block;
+	float: right;
+  width: 50px;
+	height: 50px;
+  margin: 20px 10px;
+	border-radius: 25px;
+}
+.login-btn {
+  display: block;
+	float: right;
+  margin: 30px 10px 0 10px;
+	border-radius: 2px;
+	margin-top: 30px;
+	color: #6e5f40;
+	background: #e9e380;
+	padding: 3px 10px;
+}
+.login-btn:hover {
+	color: #ffd;
+	background: #b6b243;
+}
+.logout-btn {
+  display: block;
+	float: right;
+  margin: 30px 10px 0 10px;
+	border-radius: 2px;
+	margin-top: 30px;
+	color: #f4e4bc;
+	background: #d07a5f;
+	padding: 3px 10px;
+}
+.logout-btn:hover {
+	color: #ffd;
+	background: #f2997d;
+}
+
 
 main {
   display: block;
@@ -139,4 +188,9 @@ input[type="submit"] {
 	padding: 4px 8px;
 	margin-top: 10px;
 	margin-left: 5%;
+}
+
+div#signInButton{
+	margin-left: 100px;
+	margin-top: 25px;
 }

@@ -5,7 +5,7 @@
 
     <div class="categories">
       <h2>Categories</h2>
-      {% if logged %}
+      {% if user %}
       <h3>
         <a href="{{url_for('newCategory')}}"><i class="fa fa-plus" aria-hidden="true"></i> New Category</a>
       </h3>

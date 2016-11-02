@@ -41,9 +41,12 @@ def createUser(login_session):
     return user.id
 
 
-def getUserInfo(user_id):
-    user = session.query(User).filter_by(id=user_id).one()
-    return user
+def getUserInfo():
+    try:
+        user = session.query(User).filter_by(id=current_user()).one()
+        return user
+    except:
+        return None
 
 
 def getUserID(email):
@@ -69,7 +72,7 @@ def current_user():
 def showCatalog():
     categories = session.query(Category).order_by(Category.name).all()
     items = session.query(Item).order_by(Item.name).all()
-    return render_template('catalog.html', categories=categories, items=items, logged=is_user_logged())
+    return render_template('catalog.html', categories=categories, items=items, user=getUserInfo())
 
 # Login
 @app.route('/login')
@@ -78,7 +81,7 @@ def showLogin():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in xrange(32))
     login_session['state'] = state
-    return render_template('login.html', STATE=state)
+    return render_template('login.html', STATE=state, user=getUserInfo())
 
 
 # gconnect
@@ -166,7 +169,7 @@ def gconnect():
     output += '<img src="'
     output += login_session['picture']
     output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
-    flash("you are now logged in as %s" % login_session['username'])
+    flash("You are now logged in as %s" % login_session['username'])
     print "done!"
     return output
 
@@ -185,7 +188,9 @@ def gdisconnect():
         print 'Access Token is None'
         response = make_response(json.dumps('Current user not connected.'), 401)
         response.headers['Content-Type'] = 'application/json'
-        return response
+        print response
+        flash('You are not logged in.')
+        return redirect(url_for('showCatalog'))
     # debug code
     # print 'User name is: '
     # print login_session.get('username')
@@ -207,11 +212,13 @@ def gdisconnect():
         del login_session['user_id']
         response = make_response(json.dumps('Successfully disconnected.'), 200)
         response.headers['Content-Type'] = 'application/json'
-        return response
+        flash('Successfully logged out')
+        return redirect(url_for('showCatalog'))
     else:
         response = make_response(json.dumps('Failed to revoke token for given user.', 400))
         response.headers['Content-Type'] = 'application/json'
-        return response
+        flash('Unable to log out')
+        return redirect(url_for('showCatalog'))
 
 
 # Categories CRUD
@@ -222,7 +229,7 @@ def newCategory():
     if not is_user_logged():
         return redirect(url_for('showLogin'))
     if request.method == 'GET':
-        return render_template('new_category.html')
+        return render_template('new_category.html', user=getUserInfo())
     if request.method == 'POST':
         name = request.form['name']
         description = request.form['description']
@@ -238,8 +245,8 @@ def showCategory(category_name):
     selected_category = session.query(Category).filter_by(name=category_name).first()
     if selected_category:
         items = session.query(Item).filter_by(category_id=selected_category.id).order_by(Item.name).all()
-        return render_template('category.html', category=selected_category, items=items, user_id=current_user(), logged=is_user_logged())
-    return render_template('404.html')
+        return render_template('category.html', category=selected_category, items=items, user_id=current_user(), user=getUserInfo())
+    return render_template('404.html', user=getUserInfo())
 
 # Edit Category
 @app.route('/catalog/<string:category_name>/edit', methods=['GET', 'POST'])
@@ -251,9 +258,10 @@ def editCategory(category_name):
     if selected_category:
         # checking if current user is the author:
         if current_user() != selected_category.user_id:
+            flash('You are not authorized to edit this category')
             return redirect(url_for('showCategory', category_name=category_name))
         if request.method == 'GET':
-            return render_template('edit_category.html', category=selected_category)
+            return render_template('edit_category.html', category=selected_category, user=getUserInfo())
         if request.method == 'POST':
             name = request.form['name']
             description = request.form['description']
@@ -263,7 +271,7 @@ def editCategory(category_name):
             session.commit()
             flash('%s Category edited!' % name)
             return redirect(url_for('showCategory', category_name=name))
-    return render_template('404.html')
+    return render_template('404.html', user=getUserInfo())
 
 # Delete Category
 @app.route('/catalog/<string:category_name>/delete', methods=['GET', 'POST'])
@@ -275,15 +283,16 @@ def deleteCategory(category_name):
     if selected_category:
         # checking if current user is the author:
         if current_user() != selected_category.user_id:
+            flash('You are not authorized to delete this category')
             return redirect(url_for('showCategory', category_name=category_name))
         if request.method == 'GET':
-            return render_template('delete_category.html', category=selected_category)
+            return render_template('delete_category.html', category=selected_category, user=getUserInfo())
         if request.method == 'POST':
             session.delete(selected_category)
             session.commit()
             flash('%s Category deleted!' % selected_category.name)
             return redirect(url_for('showCatalog'))
-    return render_template('404.html')
+    return render_template('404.html', user=getUserInfo())
 
 
 # Items CRUD
@@ -295,7 +304,7 @@ def newItem():
         return redirect(url_for('showLogin'))
     if request.method == 'GET':
         categories = session.query(Category).order_by(Category.name).all()
-        return render_template('new_item.html', categories=categories)
+        return render_template('new_item.html', categories=categories, user=getUserInfo())
     if request.method == 'POST':
         name = request.form['name']
         description = request.form['description']
@@ -317,8 +326,8 @@ def showItem(category_name, item_name):
     selected_category = session.query(Category).filter_by(name=category_name).first()
     selected_item = session.query(Item).filter_by(name=item_name).first()
     if selected_category and selected_item:
-        return render_template('item.html', category=selected_category, item=selected_item, user_id=current_user())
-    return render_template('404.html')
+        return render_template('item.html', category=selected_category, item=selected_item, user_id=current_user(), user=getUserInfo())
+    return render_template('404.html', user=getUserInfo())
 
 # Edit Item
 @app.route('/catalog/<string:category_name>/<string:item_name>/edit', methods=['GET', 'POST'])
@@ -331,9 +340,10 @@ def editItem(category_name, item_name):
     if selected_item:
         # checking if current user is the author:
         if current_user() != selected_item.user_id:
+            flash('You are not authorized to edit this item')
             return redirect(url_for('showItem', category_name=category_name, item_name=item_name))
         if request.method == 'GET':
-            return render_template('edit_item.html', categories=categories, item=selected_item)
+            return render_template('edit_item.html', categories=categories, item=selected_item, user=getUserInfo())
         if request.method == 'POST':
             name = request.form['name']
             description = request.form['description']
@@ -347,7 +357,7 @@ def editItem(category_name, item_name):
             flash('%s Item edited!' % name)
             session.commit()
             return redirect(url_for('showItem', category_name=selected_item.category.name, item_name=name))
-    return render_template('404.html')
+    return render_template('404.html', user=getUserInfo())
 
 # Delete Item
 @app.route('/catalog/<string:category_name>/<string:item_name>/delete', methods=['GET', 'POST'])
@@ -360,15 +370,16 @@ def deleteItem(category_name, item_name):
     if selected_category and selected_item:
         # checking if current user is the author:
         if current_user() != selected_item.user_id:
+            flash('You are not authorized to delete this item')
             return redirect(url_for('showItem', category_name=category_name, item_name=item_name))
         if request.method == 'GET':
-            return render_template('delete_item.html', category=selected_category, item=selected_item)
+            return render_template('delete_item.html', category=selected_category, item=selected_item, user=getUserInfo())
         if request.method == 'POST':
             session.delete(selected_item)
             session.commit()
             flash('%s Item deleted!' % item_name)
             return redirect(url_for('showCatalog'))
-    return render_template('404.html')
+    return render_template('404.html', user=getUserInfo())
 
 
 # JSON endpoints

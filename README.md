@@ -1,8 +1,11 @@
 # Item Catalog
-### A web application in python/flask for managing an item catalog
+## A web application in python/flask for managing an item catalog
 
-## backend : python 2.7, flask, jinja, Sqlite, sqlalchemy, oauth 2
-## frontend : html5, css3, font-awesome, jquery
+### backend :
+python 2.7, flask, jinja, Sqlite, sqlalchemy, oauth 2
+
+### frontend :
+html5, css3, font-awesome, jquery
 
 ## Structure
 * server.py - Server file, routes and requests handlers inside
@@ -38,6 +41,6 @@
   * Categories:
     * http://localhost:5000/catalog/category/JSON
   * All items belonging to a specific category:
-    * http://localhost:5000/catalog/<string:category_name>/JSON
+    * http://localhost:5000/catalog/category_name/JSON
   * A specific item:
-    * http://localhost:5000/catalog/<string:category_name>/<string:item_name>/JSON
+    * http://localhost:5000/catalog/category_name/item_name/JSON

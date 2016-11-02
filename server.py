@@ -182,8 +182,6 @@ def clearSession():
 @app.route('/gdisconnect')
 def gdisconnect():
     access_token = login_session.get('access_token')
-    # debug code
-    # print 'In gdisconnect access token is %s', access_token
     if access_token is None:
         print 'Access Token is None'
         response = make_response(json.dumps('Current user not connected.'), 401)
@@ -191,18 +189,9 @@ def gdisconnect():
         print response
         flash('You are not logged in.')
         return redirect(url_for('showCatalog'))
-    # debug code
-    # print 'User name is: '
-    # print login_session.get('username')
-    # print 'user-id : %s' % login_session['gplus_id']
-    # print 'email : %s' % login_session['email']
-    # print 'picture : %s' % login_session['picture']
     url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
-    # debug code
-    # print 'result is '
-    # print result
     if result['status'] == '200':
         del login_session['access_token']
         del login_session['gplus_id']

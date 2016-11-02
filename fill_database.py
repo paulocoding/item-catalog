@@ -2,7 +2,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from database_setup import Base, Category, Item
+from database_setup import Base, Category, Item, User
 
 engine = create_engine('sqlite:///catalogwithusers.db')
 Base.metadata.bind = engine
@@ -14,6 +14,7 @@ session = DBSession()
 # Deleting all items in db! #
 session.query(Item).delete()
 session.query(Category).delete()
+session.query(User).delete()
 
 # Create some categories :
 cat1 = Category(name="fruit", description="The best selection of fruit from all\
@@ -64,6 +65,10 @@ session.commit()
 item7 = Item(name="Peanuties", description="Peanut butter cookies",
              quantity=34, category_id=3, user_id=1)
 session.add(item7)
+session.commit()
+
+user1 = User(name="John Doe", email="no@one.com", picture="http://free-profile-pics.com/images/batman-logo-profile-picture-90x90.PNG")
+session.add(user1)
 session.commit()
 
 print "Categories and items Added!"
